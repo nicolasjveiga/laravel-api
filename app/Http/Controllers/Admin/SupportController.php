@@ -19,7 +19,7 @@ class SupportController extends Controller
     {
 
         $supports = $this->servie->getAll($request->filter);
-
+        dd($supports);
         return view('/admin/supports/index', compact('supports'));
     }
 

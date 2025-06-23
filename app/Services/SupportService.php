@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class SupportSevice
+class SupportService
 {
 
     public function __construct(
