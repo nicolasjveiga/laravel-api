@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Support;
 use App\Http\Requests\StoreUpdateSupport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -22,6 +21,13 @@ class SupportController extends Controller
 
         $supports = $this->service->getAll($request->filter);
         return view('/admin/supports/index', compact('supports'));
+    }
+
+    //Exemplo de rota de API
+    public function indexJson(Request $request)
+    {
+        $supports = $this->service->getAll($request->filter);
+        return response()->json($supports);
     }
 
     public function show(int $id)
