@@ -2,6 +2,11 @@
 
 namespace App\Services;
 
+use App\Repositories\SupportRepositoryInterface;
+use App\DTO\CreateSupportDTO;
+use App\DTO\UpdateSupportDTO;
+use stdClass;
+
 class SupportService
 {
 
@@ -14,7 +19,7 @@ class SupportService
         return $this->repository->getAll($filter);
     }
 
-    public function findOne(string $id): stdClass|null
+    public function findOne(int $id): stdClass|null
     {
         return $this->repository->findOne($id);
     }
@@ -29,7 +34,7 @@ class SupportService
         return $this->repository->update($dto);
     }
 
-    public function delete(string $id): void
+    public function delete(int $id): void
     {
         $this->repository->delete($id);
     }

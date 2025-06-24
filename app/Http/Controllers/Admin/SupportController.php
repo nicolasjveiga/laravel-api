@@ -7,23 +7,24 @@ use App\Http\Requests\StoreUpdateSupport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\SupportService;
+use App\DTO\CreateSupportDTO;
+use App\DTO\UpdateSupportDTO;
 
 class SupportController extends Controller
 {
 
     public function __construct(
-        protected SupportService $supportService
+        protected SupportService $service
     ) {}
 
     public function index(Request $request)
     {
 
-        $supports = $this->servie->getAll($request->filter);
-        dd($supports);
+        $supports = $this->service->getAll($request->filter);
         return view('/admin/supports/index', compact('supports'));
     }
 
-    public function show(Support $support, int $id)
+    public function show(int $id)
     {
         if(!$support = $this->service->findOne($id)) {
             return back();
@@ -37,7 +38,7 @@ class SupportController extends Controller
         return view('/admin/supports/create');
     }
 
-    public function store(StoreUpdateSupport $request, Support $support)
+    public function store(StoreUpdateSupport $request)
     {
         $this->service->new(
             CreateSupportDTO::makeFromRequest($request)
@@ -55,18 +56,16 @@ class SupportController extends Controller
         return view('/admin/supports/edit', compact('support'));
     }
 
-    public function update(StoreUpdateSupport $request, Support $support, int $id)
+    public function update(StoreUpdateSupport $request, int $id)
     {
 
         $support = $this->service->update(
-            UpdateSupportDTO::makeFromRequest($request, $id)
+            UpdateSupportDTO::makeFromRequest($request)
         );
 
         if(!$support) {
             return back();
         }
-
-        $support->update($request->validated());
 
         return redirect()->route('supports.index');
     }
