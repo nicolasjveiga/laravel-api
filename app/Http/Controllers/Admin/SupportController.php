@@ -6,21 +6,28 @@ use App\Models\Support;
 use App\Http\Requests\StoreUpdateSupport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Services\SupportService;
+use App\DTO\CreateSupportDTO;
+use App\DTO\UpdateSupportDTO;
 
 class SupportController extends Controller
 {
-    public function index(Support $support)
+
+    public function __construct(
+        protected SupportService $service
+    ) {}
+
+    public function index(Request $request)
     {
 
-        $supports = $support->all();
-
+        $supports = $this->service->getAll($request->filter);
         return view('/admin/supports/index', compact('supports'));
     }
 
-    public function show(Support $support, int $id)
+    public function show(int $id)
     {
-        if(!$support = Support::find($id)) {
-            return redirect()->back();
+        if(!$support = $this->service->findOne($id)) {
+            return back();
         }
 
         return view('/admin/supports/show', compact('support'));
@@ -31,43 +38,42 @@ class SupportController extends Controller
         return view('/admin/supports/create');
     }
 
-    public function store(StoreUpdateSupport $request, Support $support)
+    public function store(StoreUpdateSupport $request)
     {
-        $data = $request->validated();
-        $data['status'] = 'open';
-
-        $support = $support->create($data);
+        $this->service->new(
+            CreateSupportDTO::makeFromRequest($request)
+        );
 
         return redirect()->route('supports.index');
     }
 
-    public function edit(Support $support, int $id)
+    public function edit(int $id)
     {
-        if(!$support = $support->where('id', $id)->first()) {
+        if(!$support = $this->service->findOne($id)) {
             return back();
         }
 
         return view('/admin/supports/edit', compact('support'));
     }
 
-    public function update(StoreUpdateSupport $request, Support $support, int $id)
+    public function update(StoreUpdateSupport $request, int $id)
     {
-        if(!$support = $support->find($id)) {
+
+        $support = $this->service->update(
+            UpdateSupportDTO::makeFromRequest($request)
+        );
+
+        if(!$support) {
             return back();
         }
-
-        $support->update($request->validated());
 
         return redirect()->route('supports.index');
     }
 
     public function destroy(int $id)
     {
-        if(!$support = Support::find($id)) {
-            return back();
-        }
 
-        $support->delete();
+        $this->service->delete($id);
 
         return redirect()->route('supports.index');
     }
